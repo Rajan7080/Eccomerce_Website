@@ -26,12 +26,12 @@ Route::get('/login', function () {
 })->name('loginpage');
 
 // Auth actions
-Route::post('/register', [AdminAuthController::class, 'register'])->name('submit.register');
-Route::post('/login', [AdminAuthController::class, 'logInPost'])->name('login.submit');
+Route::post('/adminregister', [AdminAuthController::class, 'register'])->name('submit.register');
+Route::post('/adminlogin', [AdminAuthController::class, 'logInPost'])->name('login.submit');
 Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
 // Protected dashboard route
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', 'admin')->group(function () {
     Route::get('admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
 
@@ -44,12 +44,16 @@ Route::middleware('auth')->group(function () {
 
 //frontend pages
 
+Route::get('/userregister', [FrontendController::class, 'register'])->name('user.register');
+Route::get('/userlogin', [FrontendController::class, 'login'])->name('user.login');
 
-Route::get('/', [FrontendController::class, 'home'])->name('api.website');
+Route::post('registerPost', [FrontendAuthController::class, 'register'])->name('user.registerpost');
+Route::post('loginPost', [FrontendAuthController::class, 'login'])->name('user.loginpost');
 
+Route::middleware('auth')->group(function () {
 
-
-
+    Route::get('/', [FrontendController::class, 'home'])->name('api.website');
+});
 
 
 //admin dashbaord pages
