@@ -18,4 +18,12 @@ class FrontendController extends Controller
     {
         return view('welcome');
     }
+    public function register()
+    {
+        return view('frontend_page.Auth.register');
+    }
+    public function login()
+    {
+        return view('frontend_page.Auth.signin');
+    }
 }
