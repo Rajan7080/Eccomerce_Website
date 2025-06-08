@@ -619,8 +619,7 @@
                                 <!-- The small div with Sign In, Sign Up, and Logout -->
                                 <div class="auth-card">
                                     <a href="#" class="sign-in">Profile</a>
-                                    <a href="#" class="sign-up">SignIn</a>
-                                    <a href="#" class="logout">SignOut</a>
+                                    <a href="{{route('logout')}}" class="logout">logout</a>
                                 </div>
                             </li>
                         </ul>

@@ -17,6 +17,8 @@ class AdminMiddleware
     {
         if (auth()->check() && auth()->user()->role === 'admin') {
             return $next($request);
+        } else {
+            return redirect()->route('api.website');
         }
 
         abort(403, 'Unauthorized access');
