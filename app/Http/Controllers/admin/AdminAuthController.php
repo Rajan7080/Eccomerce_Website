@@ -17,12 +17,14 @@ class AdminAuthController extends Controller
             'name'     => 'required',
             'email'    => 'required|email|unique:users',
             'password' => 'required|min:6',
+            'role' => 'required'
         ]);
 
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role
         ]);
         return redirect()->route('loginpage');
     }
@@ -32,8 +34,8 @@ class AdminAuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            // $request->session()->regenerate(); // ✅ session security
-            return redirect()->route('admin.dashboard');
+            // $request->session()->regenerate();
+            return redirect()->route('dashboard');
         }
 
         throw ValidationException::withMessages([

@@ -1,41 +1,51 @@
-<nav class="navbar fixed-top p-3 custom-navbar d-flex align-items-center">
-    <!-- Sidebar Toggle Button -->
-    <button id="sidebarToggle" class="btn btn-outline-secondary me-3">
-        <i class="fas fa-arrow-left"></i>
-    </button>
-    <span> Welcome to my Dashboard </span>
-    <a class="navbar-brand ms-auto" href="#">
-        <img src="logo.png" alt="Logo" width="40" />
-    </a>
-    <div class="d-flex align-items-center ms-auto">
-        <span class="me-3 theme-toggle" onclick="toggleTheme()">
-            <img src="theme-icon.png" alt="Theme Toggle" width="25" />
-        </span>
-        <div class="dropdown">
-            <span class="text-info dropdown-toggle" id="settingsDropdown" data-bs-toggle="dropdown">
-                <img src="settings-icon.png" alt="Settings" width="25" />
-            </span>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
-                <li><a class="dropdown-item" href="#">Profile</a></li>
-                <li>
-                    <a class="dropdown-item" data-bs-toggle="offcanvas" href="#notificationCanvas" role="button" aria-controls="notificationCanvas">
-                        Notifications
-                    </a>
-                </li>
+<!-- Bootstrap CSS & FontAwesome -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
-                <li><a class="dropdown-item" href="#">Logout</a></li>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm px-3">
+    <button class="btn btn-outline-light me-3" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <a class="navbar-brand fw-bold" href="#">AdminPanel</a>
+
+    <ul class="navbar-nav ms-auto d-flex align-items-center">
+        <!-- Notification Icon -->
+        <li class="nav-item dropdown me-3">
+            <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    3
+                </span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end p-2" style="width: 300px;">
+                <li><strong class="dropdown-header">Notifications</strong></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="#">New Order Received</a></li>
+                <li><a class="dropdown-item" href="#">User Signed Up</a></li>
+                <li><a class="dropdown-item" href="#">Server Alert: High CPU</a></li>
             </ul>
-        </div>
-    </div>
+        </li>
+
+        <!-- Admin User Dropdown -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="admin-avatar.png" alt="Admin" class="rounded-circle me-2" width="32" height="32" />
+                <span>Admin</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end text-dark">
+                <li><a class="dropdown-item text-info" href="#">Profile</a></li>
+                <li><a class="dropdown-item text-info" href="#">Settings</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item text-danger" href="{{route('logout')}}">Logout</a></li>
+            </ul>
+        </li>
+    </ul>
 </nav>
-<!-- Notification Offcanvas -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="notificationCanvas" aria-labelledby="notificationCanvasLabel">
-    <div class="offcanvas-header">
-        <h5 id="notificationCanvasLabel">Notifications</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <p>No new notifications.</p>
-        <!-- You can load dynamic notification content here -->
-    </div>
-</div>
