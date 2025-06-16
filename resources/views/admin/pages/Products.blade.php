@@ -46,6 +46,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
+                                        <th>category</th>
                                         <th>price</th>
                                         <th>image</th>
                                         <th>description</th>
@@ -71,7 +72,7 @@
                                     <div class="modal-body">
                                         @csrf
 
-                                        <input type="hidden" id="product_id" name="product_id">
+
 
                                         <div class="mb-3">
                                             <label for="name" class="form-label">Product Name</label>
@@ -163,9 +164,12 @@
                                         <div class="mb-3">
                                             <label for="category_id" class="form-label">Category</label>
                                             <select class="form-control" id="_category_id" name="category_id" required>
-                                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                                    {{ $category->name }}
-                                                </option>
+                                                <option value="">Select Category</option>
+
+                                                @foreach(categoriesget() as $category)
+                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                @endforeach
+
                                             </select>
                                         </div>
                                     </div>
@@ -187,10 +191,10 @@
 
     </div>
 </div>
-@endsection
 @push('script')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="{{ asset('admin/js/products.js') }}"></script>
 
 
 @endpush
+@endsection

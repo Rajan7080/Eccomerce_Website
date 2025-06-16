@@ -25,4 +25,15 @@ class DashboardController extends Controller
     {
         return view('admin.pages.authPage.register');
     }
+
+
+
+    public function category()
+    {
+        return view('admin.pages.Categories ');
+    }
+    public function product()
+    {
+        return view('admin.pages.Products');
+    }
 }

@@ -21,7 +21,7 @@ class ProductsController extends Controller
     }
     public function index()
     {
-        $data = Products::get();
+        $data = Products::with('categories:id,name')->get();
         return response()->json([
             'status' => true,
             'message' => "document get all",
@@ -83,26 +83,17 @@ class ProductsController extends Controller
 
     public function update(Request $request, $id)
     {
-
-        $validateData = Validator::make($request->all(), [
-            'name' => 'nullable',
-            'description' => 'nullable',
-            'price' => 'nullable|string',
-            'stock' => 'nullable',
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'description' => 'required|string',
+            'price' => 'required|string',
+            'stock' => 'nullable|integer',
             'category_id' => 'nullable|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        if ($validateData->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $validateData->errors()->all(),
-            ], 422);
-        }
-
         $product = Products::find($id);
-        info('dsfdsf', [$product]);
+
         if (!$product) {
             return response()->json([
                 'status' => false,
@@ -111,26 +102,18 @@ class ProductsController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $fileName = $this->imageService->upload($request->file('image'), 'products');
-            $product->image = $fileName;
+            $validated['image'] = $this->imageService->upload($request->file('image'), 'products');
         }
 
-        // Update other fields
-        $product->name = $request->name;
-        $product->description = $request->description;
-        $product->price = $request->price;
-        $product->stock = $request->stock;
-        $product->category_id = $request->category_id;
-
-
-        $product->save();
+        $product->update($validated);
 
         return response()->json([
             'status' => true,
             'message' => 'Product updated successfully!',
-            'data' => $product
+            'data' => $product,
         ], 200);
     }
+
 
 
 

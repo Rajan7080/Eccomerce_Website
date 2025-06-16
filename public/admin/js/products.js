@@ -20,6 +20,13 @@ const fetchProductData = async () => {
                 { data: "id" },
                 { data: "name", render: (data) => data },
                 {
+                    data: 'categories',
+                    render: function (data) {
+                        return data && data.name ? data.name : 'N/A';
+                    }
+                },
+
+                {
                     data: "price",
                     render: (data) => data ? `${parseFloat(data).toFixed(2)}` : "N/A"
                 },
@@ -65,7 +72,7 @@ document.getElementById('createProductsForm').addEventListener('submit', async f
 
     const form = new FormData(this);
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/product', {
+        const response = await fetch('/api/product', {
             method: 'POST',
             body: form,
             headers: {
@@ -108,10 +115,8 @@ $(document).on('click', '.edit-product-btn', function () {
                 $('#_name').val(product.name);
                 $('#_price').val(product.price);
                 $('#_description').val(product.description);
-                $('#_category_id').val(String(product.category_id)).trigger('change');
-
+                $('select[name="category_id"]').val(product?.category_id);
                 $('#_current_image_preview').attr('src', product.image);
-
                 $('#EditFormModal').modal('show');
             } else {
                 console.error('Error fetching product:', response.message);
@@ -124,33 +129,58 @@ $(document).on('click', '.edit-product-btn', function () {
 });
 
 
-//update form
-$(document).on('submit', '#EditProductsForm', function (e) {
+
+
+
+$('#EditProductsForm').on('submit', function (e) {
     e.preventDefault();
+
     const id = $('#product_id').val();
     const formData = new FormData(this);
-    formData.append('_method', 'PUT');
+
     $.ajax({
         url: `/api/product/${id}`,
-        method: 'PUT',
-        bodydata: formData,
-        processData: false,
+        type: 'POST',
+        data: formData,
         contentType: false,
+        processData: false,
         headers: {
-            'Accept': 'application/json'
+            'X-HTTP-Method-Override': 'PUT'
         },
         success: function (response) {
             if (response.status) {
-                info('data updated successfully');
-                $('#EditFormModal').modal('hide');
+                const product = response.product;
+
+                alert('Product updated successfully!');
+                const modalElement = document.getElementById('EditFormModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                modalInstance?.hide();
+                $('#EditProductsForm')[0].reset();
+                fetchProductData()
+            } else {
+                alert('Update failed.');
             }
         },
-        error: function (response) {
-            info('invalid update');
+        error: function (xhr) {
+            // Optional: log errors or show messages
+            console.error(xhr.responseText);
+            alert('An error occurred while updating the product.');
         }
     });
-
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 $(document).on('click', '.delete-product-btn', function () {
     const id = $(this).data('id');

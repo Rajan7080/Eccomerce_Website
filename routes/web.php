@@ -34,8 +34,5 @@ Route::middleware('auth', 'admin')->group(function () {
     Route::get('admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
-
-Route::middleware('auth')->group(function () {
-
-    Route::get('/', [FrontendController::class, 'home'])->name('api.website');
-});
+///////////------grocery Route-----------
+Route::get('/', [FrontendController::class, 'home'])->name('api.website');
