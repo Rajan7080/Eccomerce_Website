@@ -2,11 +2,11 @@
      <a href="#">
          <i class="fa fa-tachometer-alt"></i> Dashboard
      </a>
-     <a href="#">
+     <a href="{{route('admin.admincategory')}}">
 
          <i class="fa fa-folder"></i> Category
      </a>
-     <a href="#">
+     <a href="{{route('admin.adminproduct')}}">
          <i class="fa fa-cube" aria-hidden="true"></i> Products
      </a>
      <a href="#">
