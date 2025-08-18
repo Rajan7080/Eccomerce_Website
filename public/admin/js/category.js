@@ -1,6 +1,6 @@
 const fetchData = async () => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/category");
+    const response = await fetch("/api/category");
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -40,6 +40,12 @@ const fetchData = async () => {
         { data: "name" },
         { data: "parent_id" },
         {
+          data: "image",
+          render: (data, type, row) => {
+            return `<img src="${data}" alt="${row.name}" style="width: 50px; height: 50px;">`;
+          }
+        },
+        {
           data: null,
           render: (row) => `
                         <button class="btn btn-sm btn-primary edit-category-btn" data-id="${row.id}">Edit</button>
@@ -54,7 +60,8 @@ const fetchData = async () => {
   }
 };
 
-// fetchData();
+fetchData();
+
 
 // Add Category Form
 document.getElementById('createCategoryForm').addEventListener('submit', function (e) {
@@ -73,7 +80,7 @@ document.getElementById('createCategoryForm').addEventListener('submit', functio
       return response.json();
     })
     .then(data => {
-      console.log('Success:', data);
+
       const modalElement = document.getElementById('createFormModal');
       const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
       modalInstance.hide();
@@ -85,121 +92,102 @@ document.getElementById('createCategoryForm').addEventListener('submit', functio
     });
 });
 
-// Edit Button Click
-$(document).ready(function () {
-  $(document).on('click', '.edit-category-btn', function () {
-    let id = $(this).data('id');
-    $.ajax({
-      url: `/api/category / ${id}`,
-      type: 'GET',
-      success: function (response) {
-        if (response.status) {
-          let category = response.data;
-          $("#id").val(category.id);
-          $("#_categoryName").val(category.name || "");
-          $("#_parentCategory").val(category.parent_id || "");
-          $("#createFormModalLabel").text("Edit Category");
-          $("#EditCategoryModel").modal('show');
-        } else {
-          console.error("Invalid response format:", response);
-        }
-
+$(document).on('click', '.edit-category-btn', function () {
+  let id = $(this).data('id');
+  $.ajax({
+    url: `/api/category/${id}`,
+    type: 'GET',
+    success: function (response) {
+      if (response.status) {
+        let category = response.data;
+        $("#id").val(category.id);
+        $("#_categoryName").val(category.name || "");
+        $('select[name="_parentCategory"]').val(category.parent_id || "");
+        $("#createFormModalLabel").text("Edit Category");
+        $('#EditCategoryModal').modal('show');
+      } else {
+        console.error("Invalid response format:", response);
       }
-    })
-  })
 
-
-});
-// Update Category Form Submission
-$("#editCategoryForm").on("submit", async function (e) {
-  e.preventDefault();
-  let form = e.target
-
-  const formData = new FormData(form);
-  formData.append('_method', 'PUT');
-  const id = $(form).find("#_id").val();
-  try {
-
-    let response = await postApi(`http://127.0.0.1:8000/api/category/${id}`, formData, "POST",);
-    if (response.status) {
-      showToast('success', response.message);
     }
-    $("#EditCategoryModel").modal("hide");
-    fetch();
-  } catch (error) {
-    showToast('error', "Error updating project:", error);
-  }
-
-  ///
-
-  $(document).on('submit', '##editCategoryForm', function (e) {
-    e.preventDefault();
-
-    let formdata = new FormData(this);
-    $.ajax({
-      url: `http://127.0.0.1:8000/api/category`,
-      type: 'POST',
-      data: formdata,
-      processData: false,
-      contentType: false,
-      success: function () {
-        info('data updated')
-        $("#EditCategoryModel").modal("hide");
-
-      }
-
-    })
   })
+})
+// Update Category Form Submission
 
+$(document).on('submit', '#editCategoryForm', function (e) {
+  e.preventDefault();
+  let id = $("#id").val();
 
+  let formdata = new FormData(this);
+  $.ajax({
+    url: `/api/category/${id}`,
+    type: 'POST',
+    data: formdata,
+    processData: false,
+    contentType: false,
+    headers: {
+      'X-HTTP-Method-Override': 'PUT'
+    },
+    success: function (response) {
+      if (response.status) {
+        const product = response.product;
 
-});
-
-
-
-
-
-
-
-// Delete Category
-$(document).off("click", ".delete-category-btn").on("click", ".delete-category-btn", async function () {
-  const id = $(this).data("id");
-  let button = $(this);
-
-  if (!confirm("Are you sure you want to delete this category?")) {
-    return; // Exit if user cancels
-  }
-
-  try {
-    await fetch(`http://127.0.0.1:8000/api/category/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+        alert('Product updated successfully!');
+        const modalElement = document.getElementById('EditCategoryModel');
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        modalInstance?.hide();
+        $('#editCategoryForm')[0].reset();
+        fetchData();
+      } else {
+        alert('Update failed.');
       }
-    });
+    },
+    error: function (xhr) {
+      alert('An error occurred while updating the product.');
+    }
 
-    // ✅ Remove Row from DataTable
-    $(button).closest("tr").remove();
-    fetchData(); // Refresh DataTable
 
-    showToast('success', "Category deleted successfully.");
-  } catch (error) {
-    console.error("Error deleting category:", error);
-    showToast('error', "Error deleting category.");
+  })
+})
+
+$(document).on('click', '.delete-category-btn', function () {
+  const id = $(this).data('id');
+  $.ajax({
+    url: `/api/category/${id}`,
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json'
+    },
+    success: function (response) {
+      alert('data deleted successfully');
+      fetchData();
+    },
+    error: function (response) {
+      alert('invalid successfully');
+    }
+  })
+})
+
+
+$.ajax({
+  url: '/api/categories',
+  type: 'GET',
+  success: function (response) {
+    if (response.status) {
+      const categories = response.data;
+      console.log(categories)
+      categories.forEach(category => {
+        $('.category-carousel .swiper-wrapper').append(`
+          <a href="#" class="nav-link swiper-slide text-center">
+            <img src="${category.image}" class="image rounded-circle" alt="Category Thumbnail">
+            <h4 class="name fs-6 mt-3 fw-normal category-title">${category.name}</h4>
+          </a>
+        `);
+      });
+    } else {
+      console.error("Invalid response format:", response);
+    }
   }
-});
-
-// ✅ Simple Toast Notification Function
-function showToast(type, message) {
-  let bgColor = type === "success" ? "green" : "red";
-  $("body").append(`<div class="toast-notification" style="position: fixed; bottom: 20px; right: 20px; background: ${bgColor}; color: white; padding: 10px 20px; border-radius: 5px; z-index: 1000;">${message}</div>`);
-
-  setTimeout(() => {
-    $(".toast-notification").fadeOut(500, function () { $(this).remove(); });
-  }, 3000);
-}
+})
 
 
-
-fetchData();
