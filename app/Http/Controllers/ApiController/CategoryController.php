@@ -2,23 +2,27 @@
 
 namespace App\Http\Controllers\ApiController;
 
-use App\Http\Controllers\Controller;
 use App\Models\Categories;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Services\ImageUploadService;
 use Illuminate\Support\Facades\Validator;
 
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of Category.
-     */
 
+    protected $imageService;
 
+    public function __construct(ImageUploadService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
     public function index()
     {
         // Fetch only parent categories and eager load children
         $categories = Categories::whereNull('parent_id')
+
             ->with('children')
             ->get();
 
@@ -30,10 +34,6 @@ class CategoryController extends Controller
     }
 
 
-    /**
-     * Store a newly created category.
-     */
-
 
     public function store(Request $request)
     {
@@ -41,6 +41,7 @@ class CategoryController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'parent_id' => 'nullable|exists:categories,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
         ];
 
         // Create validator instance
@@ -54,9 +55,17 @@ class CategoryController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
+        $fullPath = $this->imageService->upload($request->file('image'), 'uploads/categories');
 
-        // Proceed with storing the category
-        $category = Categories::create($request->only(['name', 'parent_id']));
+
+
+
+
+        $category = Categories::create([
+            'name' => $request->name,
+            'parent_id' => $request->parent_id,
+            'image' => $fullPath,
+        ]);
 
         return response()->json([
             'status' => true,
@@ -86,6 +95,7 @@ class CategoryController extends Controller
             'data' => [
                 'id' => $category->id,
                 'name' => $category->name,
+                'image' => $category->image,
                 'parent_id' => $category->parent_id ?? null, // Ensure parent_id exists
             ],
         ]);
@@ -108,6 +118,7 @@ class CategoryController extends Controller
 
         $validateData = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'parent_id' => 'nullable|exists:categories,id',
         ]);
 
@@ -122,6 +133,7 @@ class CategoryController extends Controller
 
         $category->update([
             'name' => $request->name,
+            'image' => $request->hasFile('image') ? $this->imageService->upload($request->file('image'), 'uploads/categories') : $category->image,
             'parent_id' => $request->parent_id,
         ]);
 
@@ -153,11 +165,5 @@ class CategoryController extends Controller
             'status' => true,
             'message' => 'Category deleted successfully',
         ]);
-    }
-    public function getCategories()
-    {
-        $categories = Categories::whereNull('parent_id')->with('children')->get();
-
-        return response()->json(['status' => true, 'categories' => $categories]);
     }
 }
