@@ -162,24 +162,10 @@ $('#EditProductsForm').on('submit', function (e) {
             }
         },
         error: function (xhr) {
-            // Optional: log errors or show messages
-            console.error(xhr.responseText);
             alert('An error occurred while updating the product.');
         }
     });
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 $(document).on('click', '.delete-product-btn', function () {

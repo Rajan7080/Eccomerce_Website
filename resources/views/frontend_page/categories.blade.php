@@ -1,6 +1,8 @@
 @extends('frontend_Layout.MasterLayout');
 @section('content')
-
+@php
+$data=categoriesget();
+@endphp
 <section class="pb-5">
     <div class="container-lg">
 

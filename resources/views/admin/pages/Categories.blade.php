@@ -58,10 +58,11 @@
                                             <th>ID</th>
                                             <th>Name</th>
                                             <th>Parent Category</th>
+                                            <th>Image</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody></tbody> <!-- DataTable will populate this -->
+                                    <tbody></tbody>
                                 </table>
                             </div>
                             <div class="modal fade" id="createFormModal" tabindex="-1"
@@ -74,7 +75,7 @@
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <form id="createCategoryForm" method="post" autocomplete="off">
+                                            <form id="createCategoryForm" autocomplete="off">
                                                 @csrf
                                                 <!-- Category Name Field -->
                                                 <div class="mb-3">
@@ -85,24 +86,32 @@
                                                         Please enter a category name.
                                                     </div>
                                                 </div>
+                                                <div class="mb-3">
+                                                    <label for="categoryImage" class="form-label">Image</label>
+                                                    <input type="file" id="categoryImage" name="image" class="form-control" accept="image/*" />
+                                                </div>
                                                 <!-- Parent Category Field -->
                                                 <div class="mb-3">
                                                     <label for="parentCategory" class="form-label">Parent
                                                         Category</label>
                                                     <select id="parentCategory" class="form-select" name="parent_id">
                                                         <option value="">None</option>
-                                                        @if(!empty($data))
+                                                        @php
+                                                        $data=categoriesget();
+                                                        @endphp
+
                                                         @foreach ($data as $category)
-                                                        <option value="{{ $category->id }}" {{ (isset($parent_id) && $parent_id == $category->id) ? 'selected' : '' }}>
+                                                        <option value="{{ $category->id }}" {{ (isset($parent_id) && $parent_id ==$category->id) ? 'selected' : '' }}>
                                                             {{ $category->name }}
+
                                                         </option>
                                                         @endforeach
-                                                        @endif
+
                                                     </select>
                                                 </div>
 
                                                 <!-- Submit Button -->
-                                                <button type="submit" class="btn btn-success">
+                                                <button type=" submit" class="btn btn-success">
                                                     Add Category
                                                 </button>
                                             </form>
@@ -117,7 +126,7 @@
                             </div>
                             <!--editform-->
                             <!-- Edit Category Modal -->
-                            <div class="modal fade" id="EditCategoryModel" tabindex="-1"
+                            <div class="modal fade" id="EditCategoryModal" tabindex="-1"
                                 aria-labelledby="createFormModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" style="max-width: 800px;">
                                     <div class="modal-content">
@@ -139,7 +148,10 @@
                                                         Please enter a category name.
                                                     </div>
                                                 </div>
-
+                                                <div class="mb-3">
+                                                    <label for="_categoryImage" class="form-label">Image</label>
+                                                    <input type="file" id="_categoryImage" name="image" class="form-control" accept="image/*" />
+                                                </div>
                                                 <!-- Parent Category Field -->
                                                 <div class="mb-3">
                                                     <label for="_parentCategory" class="form-label">Parent Category</label>
@@ -178,7 +190,7 @@
 @endsection
 
 @push('script')
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script type="text/javascript" src="{{ asset('admin/js/category.js') }}"></script>
 
 
