@@ -92,21 +92,6 @@ document.getElementById('createCategoryForm').addEventListener('submit', functio
     });
 });
 
-$(document).on('click', '.edit-category-btn', function () {
-  let id = $(this).data('id');
-  $.ajax({
-    url: `/api/category/${id}`,
-    type: 'GET',
-    success: function (response) {
-      if (response.status) {
-        let category = response.data;
-        $("#id").val(category.id);
-        $("#_categoryName").val(category.name || "");
-        $('select[name="_parentCategory"]').val(category.parent_id || "");
-        $("#createFormModalLabel").text("Edit Category");
-        $('#EditCategoryModal').modal('show');
-      } else {
-        console.error("Invalid response format:", response);
       }
 
     }

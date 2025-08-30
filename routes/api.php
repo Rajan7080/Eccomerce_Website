@@ -24,5 +24,6 @@ use App\Http\Controllers\ApiController\ProductsController;
 //categories
 Route::apiResource('category', CategoryController::class);
 
+
 ////Products
 Route::apiResource('product', ProductsController::class);
